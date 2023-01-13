@@ -39,10 +39,6 @@ jobs:
     name: Build on Windows
     runs-on: windows-latest
 
-    defaults:
-      run:
-       shell: msys2 {0}
-
     env:
       CC:
       CXX:
@@ -57,10 +53,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Disable LF to CRLF Auto Translation In Git
-        run: |
-          git config --global core.autocrlf false
-          git config --global core.eol lf
       - name: Install Dependencies
         run: |
           choco install wget
