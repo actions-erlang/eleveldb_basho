@@ -39,12 +39,15 @@ jobs:
     name: Build on Windows
     runs-on: windows-latest
 
+    defaults:
+      run:
+       shell: msys2 {0}
+
     env:
       CC:
       CXX:
       CMAKE_BUILD_DIR: ${{ github.workspace }}/build
       CMAKE_BUILD_TYPE: "RelWithDebInfo"
-      CMAKE_CXX_STANDARD: "17"
       BINARY_SUFFIX: ".exe"
       BINARY_PATH: >-
         ${{ format(
@@ -54,6 +57,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Disable LF to CRLF Auto Translation In Git
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
       - name: Install Dependencies
         run: |
           choco install wget
@@ -61,13 +68,19 @@ jobs:
       - uses: msys2/setup-msys2@v2
         if: matrix.os == 'windows-latest'
         with:
+          msystem: MINGW64
           update: true
-          install: autoconf
+          install: base-devel mingw-w64-x86_64-make mingw-w64-x86_64-clang
       - name: Install Erlang
         uses: erlef/setup-beam@v1
         with:
           otp-version: "24"
           rebar3-version: "3.18.0"
-      - run: rebar3 compile
+      - name: Output System Information
+        run: |
+          echo "MSC (cl.exe) version check:"
+          cl
+      - run: |
+         rebar3 compile
       - name: Run eunit
         run: ./rebar3 as gha do eunit
