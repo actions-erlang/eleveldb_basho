@@ -57,6 +57,12 @@ jobs:
       - name: Install Dependencies
         run: |
           choco install wget
+      # check windows can generate autoconf too
+      - uses: msys2/setup-msys2@v2
+        if: matrix.os == 'windows-latest'
+        with:
+          update: true
+          install: autoconf
       - name: Install Erlang
         uses: erlef/setup-beam@v1
         with:
