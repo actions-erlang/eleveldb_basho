@@ -2,15 +2,12 @@ name: Erlang CI
 
 on:
   push:
-    branches: [ develop ]
+    branches: [develop]
   pull_request:
-    branches: [ develop ]
-
+    branches: [develop]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -31,9 +28,36 @@ jobs:
         run: apt-get update && apt-get install -y cmake && make
       - name: Run tests
         run: apt-get update && apt-get install -y cmake libc6-dev && make check
-      - name: rebar3 compile 
+      - name: rebar3 compile
         run: ./rebar3 compile
       - name: Run xref and dialyzer
         run: ./rebar3 do xref, dialyzer
+      - name: Run eunit
+        run: ./rebar3 as gha do eunit
+
+  windows:
+    name: Build on Windows
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Disable LF to CRLF Auto Translation In Git
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+      - name: Install Dependencies
+        run: |
+          choco install wget
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+      - name: Install Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: "24"
+          rebar3-version: "3.18.0"
+      - run: |
+         rebar3 compile
       - name: Run eunit
         run: ./rebar3 as gha do eunit
