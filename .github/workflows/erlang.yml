@@ -37,15 +37,25 @@ jobs:
 
   windows:
     name: Build on Windows
-    runs-on: windows-2022
+    runs-on: windows-latest
+
+    env:
+      CC:
+      CXX:
+      CMAKE_BUILD_DIR: ${{ github.workspace }}/build
+      CMAKE_BUILD_TYPE: "RelWithDebInfo"
+      BINARY_SUFFIX: ".exe"
+      BINARY_PATH: >-
+        ${{ format(
+        '{0}\build\{1}\',
+        github.workspace,
+        'RelWithDebInfo') }}
 
     steps:
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
-          choco install wget cmake
-          choco install openssl
-          move "c:\\Program Files\\OpenSSL-Win64" "c:\\OpenSSL-Win64"
+          choco install wget
       - name: Install Erlang
         uses: erlef/setup-beam@v1
         with:
