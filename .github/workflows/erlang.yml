@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
-          choco install wget
+          choco install wget cmake
           choco install openssl
           move "c:\\Program Files\\OpenSSL-Win64" "c:\\OpenSSL-Win64"
       - name: Install Erlang
